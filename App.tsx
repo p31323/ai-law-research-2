@@ -87,7 +87,8 @@ const App: React.FC = () => {
       }
     } catch (err) {
       console.error(err);
-      setError('查詢時發生錯誤，請稍後再試。可能是 API 金鑰未設定或無效。');
+      const errorMessage = err instanceof Error ? err.message : '查詢時發生未知的錯誤，請稍後再試。';
+      setError(errorMessage);
     } finally {
       stopProgress();
       setProgress(100);

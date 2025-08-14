@@ -4,7 +4,7 @@ import type { Regulation, GroundingSource } from '../types';
 export const fetchRegulations = async (query: string, country: string, language: string): Promise<{ regulations: Regulation[] | null; rawText: string; sources: GroundingSource[]; }> => {
 
   if (!process.env.API_KEY) {
-    throw new Error("API_KEY environment variable not set");
+    throw new Error("API 金鑰未在環境變數中設定。請檢查您的部署設定。");
   }
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
@@ -102,7 +102,7 @@ export const translateText = async (textToTranslate: string, targetLanguage: str
     }
     
     if (!process.env.API_KEY) {
-      throw new Error("API_KEY environment variable not set");
+      throw new Error("API 金鑰未在環境變數中設定。請檢查您的部署設定。");
     }
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
