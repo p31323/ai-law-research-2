@@ -1,13 +1,12 @@
 import { GoogleGenAI } from "@google/genai";
 import type { Regulation, GroundingSource } from '../types';
 
-if (!process.env.API_KEY) {
-  throw new Error("API_KEY environment variable not set");
-}
-
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 export const fetchRegulations = async (query: string, country: string, language: string): Promise<{ regulations: Regulation[] | null; rawText: string; sources: GroundingSource[]; }> => {
+
+  if (!process.env.API_KEY) {
+    throw new Error("API_KEY environment variable not set");
+  }
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
   const taiwanPriorityInstruction = country === 'Taiwan'
     ? `
@@ -101,6 +100,12 @@ export const translateText = async (textToTranslate: string, targetLanguage: str
     if (!textToTranslate) {
         return "";
     }
+    
+    if (!process.env.API_KEY) {
+      throw new Error("API_KEY environment variable not set");
+    }
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+
     const prompt = `Translate the following text to ${targetLanguage}. 
 Do not add any extra explanations, introductory phrases, or markdown formatting. 
 Only return the translated text directly.
