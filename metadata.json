@@ -1,0 +1,5 @@
+{
+  "name": "AI 法規查詢系統",
+  "description": "一個使用 AI 技術的智慧法規查詢系統，能根據關鍵字或句子，快速查找相關法規、條文內容及罰則，並提供資料來源連結。",
+  "requestFramePermissions": []
+}
