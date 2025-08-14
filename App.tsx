@@ -99,22 +99,29 @@ const App: React.FC = () => {
   }, [stopProgress, country, language]);
 
   return (
-    <div className="min-h-screen font-sans text-gray-800">
+    <div className="min-h-screen bg-gray-50 font-sans text-gray-800">
       <Header />
       <main className="max-w-4xl mx-auto p-4 md:p-8">
-        <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 mb-8">
-          <p className="text-gray-600 mb-4">
-            選擇目標國家與語言，然後輸入法律問題、情境或關鍵字。
-          </p>
-          <SearchControls 
-            onSearch={handleSearch} 
-            isLoading={isLoading}
-            country={country}
-            language={language}
-            onCountryChange={handleCountryChange}
-            onLanguageChange={setLanguage}
-          />
-        </div>
+        <section aria-labelledby="search-heading" className="bg-white rounded-lg border border-gray-200 shadow-sm mb-8 overflow-hidden">
+           <div className="p-6 md:p-8">
+              <h2 id="search-heading" className="text-xl font-semibold text-gray-900">
+                AI 法律查詢
+              </h2>
+              <p className="mt-1 text-gray-600">
+                選擇目標國家與語言，然後輸入您的法律問題、情境或關鍵字。
+              </p>
+          </div>
+          <div className="bg-gray-50/70 p-6 md:p-8 border-t border-gray-200">
+              <SearchControls 
+                onSearch={handleSearch} 
+                isLoading={isLoading}
+                country={country}
+                language={language}
+                onCountryChange={handleCountryChange}
+                onLanguageChange={setLanguage}
+              />
+          </div>
+        </section>
 
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg relative mb-6" role="alert">
