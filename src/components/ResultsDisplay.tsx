@@ -23,8 +23,8 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ regulations, sources })
       {regulations.map((reg, index) => (
         <RegulationCard key={index} regulation={reg} />
       ))}
-      {/* Ensure data sources are always displayed with results */}
-      <SourceLinks sources={sources} />
+      {/* Conditionally render SourceLinks only if sources exist */}
+      {sources && sources.length > 0 && <SourceLinks sources={sources} />}
     </div>
   );
 };

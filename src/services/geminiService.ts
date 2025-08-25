@@ -61,6 +61,8 @@ The required JSON format for each object is:
   "penalty": "Related penalty clauses and their corresponding article numbers. If none are directly mentioned, state that."
 }
 
+ABSOLUTE REQUIREMENT: Your response is only considered valid if it is a JSON array AND it is accompanied by grounding sources from Google Search. If you can generate a valid JSON object but cannot find a citable web source for it, you MUST treat this as a failure and return an empty JSON array: [].
+
 FINAL CRITICAL RULE: If, after using Google Search, you cannot find sufficient information to confidently populate the JSON array, you MUST return an empty JSON array: []. Do not attempt to answer from memory or provide an unsourced response.`;
 
   try {
@@ -161,6 +163,8 @@ The required JSON format for each object is:
   "summary": "A concise summary of the policy's main goals and objectives, written in a neutral tone.",
   "keyPoints": ["A list of key initiatives, actions, or highlights from the policy document."]
 }
+
+ABSOLUTE REQUIREMENT: Your response is only considered valid if it is a JSON array AND it is accompanied by grounding sources from Google Search. If you can generate a valid JSON object but cannot find a citable web source for it, you MUST treat this as a failure and return an empty JSON array: [].
 
 FINAL CRITICAL RULE: If, after using Google Search, you cannot find sufficient information to confidently populate the JSON array, you MUST return an empty JSON array: []. Do not attempt to answer from memory or provide an unsourced response.`;
 

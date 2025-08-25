@@ -295,13 +295,13 @@ const App: React.FC = () => {
     try {
       const { regulations, rawText, sources: fetchedSources } = await fetchRegulations(searchQuery, country, language, filters);
 
-      // A valid result MUST have both regulations and sources.
-      if (regulations && regulations.length > 0 && fetchedSources && fetchedSources.length > 0) {
-        setLawSources(fetchedSources);
+      // If we have successfully parsed regulations, display them.
+      if (regulations && regulations.length > 0) {
         setLawResults(regulations);
+        setLawSources(fetchedSources || []); // Show sources if available, otherwise an empty list.
         setLawRawText(null);
         setLawError(null);
-      } else {
+      } else { // This block now handles cases where parsing failed, or the AI returned an empty array.
         setLawResults([]);
         setLawSources([]);
         
@@ -311,8 +311,10 @@ const App: React.FC = () => {
         setLawRawText(isMeaningfulRawText ? trimmedText : null);
 
         if (isMeaningfulRawText) {
-          setLawError('AI 回應的格式無法解析或不符合來源要求，但已顯示原始文字內容。');
+          // The AI returned something, but it wasn't a valid, non-empty array of regulations.
+          setLawError('AI 回應的格式無法解析或為空，但已顯示原始文字內容。');
         } else {
+          // The AI returned nothing meaningful.
           setLawError('找不到相關資訊，請嘗試使用不同的關鍵字或情境描述。');
         }
       }
@@ -345,13 +347,13 @@ const App: React.FC = () => {
     try {
       const { policies, rawText, sources: fetchedSources } = await fetchPolicies(searchQuery, country, language, filters);
 
-      // A valid result MUST have both policies and sources.
-      if (policies && policies.length > 0 && fetchedSources && fetchedSources.length > 0) {
-        setPolicySources(fetchedSources);
+      // If we have successfully parsed policies, display them.
+      if (policies && policies.length > 0) {
         setPolicyResults(policies);
+        setPolicySources(fetchedSources || []); // Show sources if available
         setPolicyRawText(null);
         setPolicyError(null);
-      } else {
+      } else { // Parsing failed or empty array returned
         setPolicyResults([]);
         setPolicySources([]);
         
@@ -361,7 +363,7 @@ const App: React.FC = () => {
         setPolicyRawText(isMeaningfulRawText ? trimmedText : null);
 
         if (isMeaningfulRawText) {
-          setPolicyError('AI 回應的格式無法解析或不符合來源要求，但已顯示原始文字內容。');
+          setPolicyError('AI 回應的格式無法解析或為空，但已顯示原始文字內容。');
         } else {
           setPolicyError('找不到相關資訊，請嘗試使用不同的關鍵字或情境描述。');
         }

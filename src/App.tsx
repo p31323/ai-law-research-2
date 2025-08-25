@@ -211,8 +211,8 @@ const PolicyResultsDisplay: React.FC<{ policies: Policy[], sources: GroundingSou
       {policies.map((policy, index) => (
         <PolicyCard key={index} policy={policy} />
       ))}
-      {/* Ensure data sources are always displayed with results */}
-      <SourceLinks sources={sources} />
+      {/* Conditionally render SourceLinks only if sources exist */}
+      {sources && sources.length > 0 && <SourceLinks sources={sources} />}
     </div>
   );
 };
@@ -295,13 +295,13 @@ const App: React.FC = () => {
     try {
       const { regulations, rawText, sources: fetchedSources } = await fetchRegulations(searchQuery, country, language, filters);
 
-      // A valid result MUST have both regulations and sources.
+      // CRITICAL: Results are only valid if they are parsed AND have sources.
       if (regulations && regulations.length > 0 && fetchedSources && fetchedSources.length > 0) {
-        setLawSources(fetchedSources);
         setLawResults(regulations);
+        setLawSources(fetchedSources);
         setLawRawText(null);
         setLawError(null);
-      } else {
+      } else { // Handle all failure cases: parsing failed, empty results, or no sources.
         setLawResults([]);
         setLawSources([]);
         
@@ -310,9 +310,14 @@ const App: React.FC = () => {
         
         setLawRawText(isMeaningfulRawText ? trimmedText : null);
 
-        if (isMeaningfulRawText) {
-          setLawError('AI 回應的格式無法解析或不符合來源要求，但已顯示原始文字內容。');
+        if (regulations && regulations.length > 0 && (!fetchedSources || fetchedSources.length === 0)) {
+            // Case: Valid data, but no sources. This is a failure.
+            setLawError('AI 回應的格式正確，但因缺少必要的資料來源，查詢結果不予採納。已顯示原始文字內容供參考。');
+        } else if (isMeaningfulRawText) {
+          // Case: Parsing failed but we have some raw text.
+          setLawError('AI 回應的格式無法解析或不符合要求，但已顯示原始文字內容。');
         } else {
+          // Case: No meaningful response from the AI.
           setLawError('找不到相關資訊，請嘗試使用不同的關鍵字或情境描述。');
         }
       }
@@ -345,13 +350,13 @@ const App: React.FC = () => {
     try {
       const { policies, rawText, sources: fetchedSources } = await fetchPolicies(searchQuery, country, language, filters);
 
-      // A valid result MUST have both policies and sources.
+      // CRITICAL: Results are only valid if they are parsed AND have sources.
       if (policies && policies.length > 0 && fetchedSources && fetchedSources.length > 0) {
-        setPolicySources(fetchedSources);
         setPolicyResults(policies);
+        setPolicySources(fetchedSources);
         setPolicyRawText(null);
         setPolicyError(null);
-      } else {
+      } else { // Handle all failure cases: parsing failed, empty results, or no sources.
         setPolicyResults([]);
         setPolicySources([]);
         
@@ -360,9 +365,14 @@ const App: React.FC = () => {
 
         setPolicyRawText(isMeaningfulRawText ? trimmedText : null);
 
-        if (isMeaningfulRawText) {
-          setPolicyError('AI 回應的格式無法解析或不符合來源要求，但已顯示原始文字內容。');
+        if (policies && policies.length > 0 && (!fetchedSources || fetchedSources.length === 0)) {
+            // Case: Valid data, but no sources. This is a failure.
+            setPolicyError('AI 回應的格式正確，但因缺少必要的資料來源，查詢結果不予採納。已顯示原始文字內容供參考。');
+        } else if (isMeaningfulRawText) {
+          // Case: Parsing failed but we have some raw text.
+          setPolicyError('AI 回應的格式無法解析或不符合要求，但已顯示原始文字內容。');
         } else {
+          // Case: No meaningful response from the AI.
           setPolicyError('找不到相關資訊，請嘗試使用不同的關鍵字或情境描述。');
         }
       }
