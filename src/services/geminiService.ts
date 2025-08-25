@@ -59,7 +59,9 @@ The required JSON format for each object is:
   "article": "The relevant article number (e.g., Article 5)",
   "content": "The full, verbatim content of the specified article",
   "penalty": "Related penalty clauses and their corresponding article numbers. If none are directly mentioned, state that."
-}`;
+}
+
+FINAL CRITICAL RULE: If, after using Google Search, you cannot find sufficient information to confidently populate the JSON array, you MUST return an empty JSON array: []. Do not attempt to answer from memory or provide an unsourced response.`;
 
   try {
     const response = await ai.models.generateContent({
@@ -72,17 +74,16 @@ The required JSON format for each object is:
     });
 
     const rawText = response.text.trim();
-    const groundingMetadata = response.candidates?.[0]?.groundingMetadata;
-    const groundingChunks = groundingMetadata?.groundingChunks;
+    const groundingChunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks;
 
     let sources: GroundingSource[] = [];
     if (groundingChunks) {
         sources = groundingChunks
-            .map((chunk: any) => chunk.web)
-            .filter((web: any) => web && web.uri)
-            .map((web: any) => ({
-                uri: web.uri,
-                title: web.title || '',
+            .map((chunk: any) => chunk.web || chunk.retrievedContext) // Handle both web and retrievedContext
+            .filter((source: any) => source && source.uri)
+            .map((source: any) => ({
+                uri: source.uri,
+                title: source.title || '',
             }));
     }
     
@@ -159,7 +160,9 @@ The required JSON format for each object is:
   "status": "The current status (e.g., In Planning, Active, Completed, Proposed)",
   "summary": "A concise summary of the policy's main goals and objectives, written in a neutral tone.",
   "keyPoints": ["A list of key initiatives, actions, or highlights from the policy document."]
-}`;
+}
+
+FINAL CRITICAL RULE: If, after using Google Search, you cannot find sufficient information to confidently populate the JSON array, you MUST return an empty JSON array: []. Do not attempt to answer from memory or provide an unsourced response.`;
 
   try {
     const response = await ai.models.generateContent({
@@ -172,17 +175,16 @@ The required JSON format for each object is:
     });
 
     const rawText = response.text.trim();
-    const groundingMetadata = response.candidates?.[0]?.groundingMetadata;
-    const groundingChunks = groundingMetadata?.groundingChunks;
+    const groundingChunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks;
 
     let sources: GroundingSource[] = [];
     if (groundingChunks) {
         sources = groundingChunks
-            .map((chunk: any) => chunk.web)
-            .filter((web: any) => web && web.uri)
-            .map((web: any) => ({
-                uri: web.uri,
-                title: web.title || '',
+            .map((chunk: any) => chunk.web || chunk.retrievedContext) // Handle both web and retrievedContext
+            .filter((source: any) => source && source.uri)
+            .map((source: any) => ({
+                uri: source.uri,
+                title: source.title || '',
             }));
     }
     

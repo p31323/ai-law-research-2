@@ -211,6 +211,7 @@ const PolicyResultsDisplay: React.FC<{ policies: Policy[], sources: GroundingSou
       {policies.map((policy, index) => (
         <PolicyCard key={index} policy={policy} />
       ))}
+      {/* Ensure data sources are always displayed with results */}
       <SourceLinks sources={sources} />
     </div>
   );
@@ -293,19 +294,27 @@ const App: React.FC = () => {
 
     try {
       const { regulations, rawText, sources: fetchedSources } = await fetchRegulations(searchQuery, country, language, filters);
-      setLawSources(fetchedSources);
 
-      if (regulations) {
+      // A valid result MUST have both regulations and sources.
+      if (regulations && regulations.length > 0 && fetchedSources && fetchedSources.length > 0) {
+        setLawSources(fetchedSources);
         setLawResults(regulations);
         setLawRawText(null);
+        setLawError(null);
       } else {
-         const trimmedText = rawText.trim();
-         setLawRawText(trimmedText ? trimmedText : null);
-         if (trimmedText) {
-            setLawError('AI 回應的格式無法解析，但已顯示原始文字內容。');
-         } else if (fetchedSources.length === 0) {
-            setLawError('找不到相關資訊，請嘗試使用不同的關鍵字或情境描述。');
-         }
+        setLawResults([]);
+        setLawSources([]);
+        
+        const trimmedText = rawText.trim();
+        const isMeaningfulRawText = trimmedText && trimmedText !== '[]';
+        
+        setLawRawText(isMeaningfulRawText ? trimmedText : null);
+
+        if (isMeaningfulRawText) {
+          setLawError('AI 回應的格式無法解析或不符合來源要求，但已顯示原始文字內容。');
+        } else {
+          setLawError('找不到相關資訊，請嘗試使用不同的關鍵字或情境描述。');
+        }
       }
     } catch (err) {
       console.error(err);
@@ -335,19 +344,27 @@ const App: React.FC = () => {
 
     try {
       const { policies, rawText, sources: fetchedSources } = await fetchPolicies(searchQuery, country, language, filters);
-      setPolicySources(fetchedSources);
 
-      if (policies) {
+      // A valid result MUST have both policies and sources.
+      if (policies && policies.length > 0 && fetchedSources && fetchedSources.length > 0) {
+        setPolicySources(fetchedSources);
         setPolicyResults(policies);
         setPolicyRawText(null);
+        setPolicyError(null);
       } else {
-         const trimmedText = rawText.trim();
-         setPolicyRawText(trimmedText ? trimmedText : null);
-         if (trimmedText) {
-            setPolicyError('AI 回應的格式無法解析，但已顯示原始文字內容。');
-         } else if (fetchedSources.length === 0) {
-            setPolicyError('找不到相關資訊，請嘗試使用不同的關鍵字或情境描述。');
-         }
+        setPolicyResults([]);
+        setPolicySources([]);
+        
+        const trimmedText = rawText.trim();
+        const isMeaningfulRawText = trimmedText && trimmedText !== '[]';
+
+        setPolicyRawText(isMeaningfulRawText ? trimmedText : null);
+
+        if (isMeaningfulRawText) {
+          setPolicyError('AI 回應的格式無法解析或不符合來源要求，但已顯示原始文字內容。');
+        } else {
+          setPolicyError('找不到相關資訊，請嘗試使用不同的關鍵字或情境描述。');
+        }
       }
     } catch (err) {
       console.error(err);
@@ -374,9 +391,9 @@ const App: React.FC = () => {
             </div>
           )}
           {isLawLoading && <ProgressBar progress={lawProgress} />}
-          {!isLawLoading && lawResults.length === 0 && lawRawText === null && lawSources.length === 0 && <InitialState />}
+          {!isLawLoading && lawResults.length === 0 && lawRawText === null && lawError === null && <InitialState />}
           {lawResults.length > 0 && <ResultsDisplay regulations={lawResults} sources={lawSources} />}
-          {!isLawLoading && lawResults.length === 0 && (lawRawText || lawSources.length > 0) &&
+          {!isLawLoading && lawResults.length === 0 && lawRawText &&
             <div className="space-y-6">
               {lawRawText && (
                  <div className="bg-gray-50 border border-gray-200 text-gray-800 p-4 rounded-lg">
@@ -401,9 +418,9 @@ const App: React.FC = () => {
             </div>
           )}
           {isPolicyLoading && <ProgressBar progress={policyProgress} />}
-          {!isPolicyLoading && policyResults.length === 0 && policyRawText === null && policySources.length === 0 && <InitialState />}
+          {!isPolicyLoading && policyResults.length === 0 && policyRawText === null && policyError === null && <InitialState />}
           {policyResults.length > 0 && <PolicyResultsDisplay policies={policyResults} sources={policySources} />}
-          {!isPolicyLoading && policyResults.length === 0 && (policyRawText || policySources.length > 0) &&
+          {!isPolicyLoading && policyResults.length === 0 && policyRawText &&
             <div className="space-y-6">
               {policyRawText && (
                  <div className="bg-gray-50 border border-gray-200 text-gray-800 p-4 rounded-lg">
