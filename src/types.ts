@@ -7,6 +7,15 @@ export interface Regulation {
   penalty: string;
 }
 
+export interface Policy {
+  policyName: string;
+  issuingAgency: string;
+  publicationDate: string;
+  status: string;
+  summary: string;
+  keyPoints: string[];
+}
+
 export interface GroundingSource {
   uri: string;
   title?: string;
